@@ -7,7 +7,12 @@ $dbname = 'world';
 $conn = new PDO("mysql:host=$host;dbname=$dbname;charset=utf8mb4", $username, $password);
 $stmt = $conn->query("SELECT * FROM countries");
 if (isset($_GET['country'])) {
-  // Get the country parameter from the GET request
+
+  if (isset($_GET['lookup']) && $_GET['lookup'] === 'cities') {
+    $stmt = $conn->prepare("SELECT name, district, population FROM cities WHERE countrycode = (SELECT code FROM countries WHERE name = :country)");
+} else {
+    $stmt = $conn->prepare("SELECT name, continent, indepyear, headofstate FROM countries WHERE name = :country");
+}
   $country = $_GET['country'];
 $results = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
